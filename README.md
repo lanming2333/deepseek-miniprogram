@@ -24,9 +24,9 @@
 - 🎯 无服务器架构：直接调用 AI API，降低部署复杂度
 - 💾 本地存储：使用微信 Storage 存储聊天记录
 - 🌐 多 API 支持：
-  - SiliconFlow API（主要）
+  - Ark火山引擎 API（主要）
   - DeepSeek API（备用）
-  - Ark API（备用）
+  - SiliconFlow API（备用）
 - 📱 优秀体验：
   - 流式输出优化
   - 推理过程展示
