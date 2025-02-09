@@ -1,0 +1,82 @@
+<view class="history-page">
+  <!-- 顶部操作栏 -->
+  <view class="top-bar">
+    <view class="title">聊天记录</view>
+    <view class="clear-btn" bindtap="clearAllHistory">清空记录</view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search-box">
+    <view class="search-input-wrap">
+      <image class="search-icon" src="/assets/images/search.png" mode="aspectFit" />
+      <input 
+        class="search-input"
+        type="text"
+        placeholder="搜索聊天记录"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        confirm-type="search"
+        bindconfirm="onSearch"
+      />
+      <view 
+        class="clear-icon {{searchKeyword ? 'show' : ''}}" 
+        bindtap="clearSearch"
+      >×</view>
+    </view>
+  </view>
+
+  <!-- 会话列表 -->
+  <scroll-view 
+    class="session-list"
+    scroll-y 
+    bindscrolltolower="onLoadMore"
+    enhanced="{{true}}"
+    show-scrollbar="{{false}}">
+    
+    <block wx:for="{{sessionList}}" wx:key="id">
+      <view class="session-item" 
+            bindtap="navigateToChat" 
+            data-session="{{item}}"
+            bindlongpress="showActions">
+        <!-- 会话图标 -->
+        <view class="session-icon">
+          <image src="/assets/images/chat-history.png" mode="aspectFit" />
+        </view>
+        
+        <!-- 会话信息 -->
+        <view class="session-info">
+          <view class="session-title">{{item.title || '新对话'}}</view>
+          <view class="session-time">{{item.timestamp ? formatTime(item.timestamp) : ''}}</view>
+          <view class="session-preview" wx:if="{{item.messages && item.messages.length}}">
+            {{item.messages[item.messages.length - 1].content}}
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 加载更多 -->
+    <view wx:if="{{isLoading}}" class="loading">
+      <view class="loading-icon"></view>
+      <text>加载中...</text>
+    </view>
+    
+    <!-- 没有更多数据 -->
+    <view wx:if="{{!hasMore && sessionList.length > 0}}" class="no-more">
+      没有更多记录了
+    </view>
+    
+    <!-- 暂无数据 -->
+    <view wx:if="{{!isLoading && sessionList.length === 0}}" class="empty">
+      <image src="/assets/images/empty.png" mode="aspectFit" />
+      <text>暂无聊天记录</text>
+    </view>
+  </scroll-view>
+
+  <!-- 操作菜单 -->
+  <action-sheet 
+    show="{{showActionSheet}}" 
+    bindclose="hideActionSheet">
+    <action-sheet-item bindtap="deleteSession">删除此记录</action-sheet-item>
+    <action-sheet-cancel>取消</action-sheet-cancel>
+  </action-sheet>
+</view> 

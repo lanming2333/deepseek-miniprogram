@@ -1,0 +1,55 @@
+<view class="chat-bubble {{message.role === 'user' ? 'user' : 'assistant'}}">
+  <!-- 时间显示 -->
+  <view wx:if="{{showTime}}" class="time">{{formattedTime}}</view>
+  
+  <!-- 消息内容 -->
+  <view class="message-container">
+    <!-- 头像 -->
+    <view class="avatar" wx:if="{{message.role === 'assistant'}}">
+      <image src="/assets/images/assistant-avatar.png" 
+             mode="aspectFill"
+             class="avatar-image"/>
+    </view>
+    
+    <!-- 消息内容 -->
+    <view class="content">
+      <!-- 思考中状态 -->
+      <block wx:if="{{isThinking}}">
+        <view class="thinking-bubble">
+          <view class="thinking-text">
+            思考中
+            <view class="thinking-dots">
+              <text class="dot">.</text>
+              <text class="dot">.</text>
+              <text class="dot">.</text>
+            </view>
+          </view>
+        </view>
+      </block>
+      
+      <!-- 推理过程 -->
+      <view wx:if="{{!isThinking && message.role === 'assistant' && message.reasoning_content}}" class="reasoning-container">
+        <view class="reasoning-header" bindtap="toggleReasoning">
+          <text>查看推理过程</text>
+          <view class="arrow {{isReasoningExpanded ? 'expanded' : ''}}"></view>
+        </view>
+        <view wx:if="{{isReasoningExpanded}}" class="reasoning-content text-wrap">
+          {{message.reasoning_content}}
+        </view>
+      </view>
+      
+      <!-- 普通消息内容 -->
+      <view wx:if="{{!isThinking && message.content}}" class="text-content text-wrap">{{message.content}}</view>
+      
+      <!-- 加载状态 -->
+      <view wx:if="{{message.loading}}" class="loading-container">
+        <view class="loading"></view>
+      </view>
+      
+      <!-- 错误状态 -->
+      <view wx:if="{{message.error}}" class="error-message text-error">
+        {{message.error}}
+      </view>
+    </view>
+  </view>
+</view> 

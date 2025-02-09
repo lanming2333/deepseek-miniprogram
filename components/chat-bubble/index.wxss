@@ -1,0 +1,210 @@
+/* 聊天气泡容器 */
+.chat-bubble {
+  margin: 20rpx 30rpx;
+  max-width: 100%;
+}
+
+/* 时间显示 */
+.time {
+  text-align: center;
+  font-size: 24rpx;
+  color: #999;
+  margin: 20rpx 0;
+}
+
+/* 消息容器 */
+.message-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* 用户消息靠右显示 */
+.user .message-container {
+  justify-content: flex-end;
+}
+
+/* 头像样式 */
+.avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 8rpx;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar .avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 消息内容样式 */
+.content {
+  margin: 0 20rpx;
+  max-width: calc(100% - 112rpx);
+  min-width: 100rpx;
+}
+
+.user .content {
+  margin-right: 0;
+  max-width: 80%;
+}
+
+.assistant .content {
+  margin-left: 20rpx;
+  max-width: calc(100% - 112rpx);
+}
+
+.text-content {
+  padding: 20rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+/* 用户消息样式 */
+.user .text-content {
+  background-color: #eff6ff;
+  color: #333;
+}
+
+/* AI助手消息样式 */
+.assistant .text-content {
+  background-color: #ffffff;
+  color: #333;
+}
+
+/* 加载动画容器 */
+.loading-container {
+  padding: 20rpx 0;
+  text-align: center;
+}
+
+/* 错误消息样式 */
+.error-message {
+  font-size: 24rpx;
+  padding: 10rpx 0;
+  color: #ff4d4f;
+}
+
+/* 推理过程容器 */
+.reasoning-container {
+  margin-top: 10rpx;
+}
+
+.reasoning-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 16rpx;
+  background-color: #f0f2f5;
+  border-radius: 8rpx 8rpx 0 0;
+  cursor: pointer;
+}
+
+.reasoning-header text {
+  color: #666;
+  font-size: 24rpx;
+}
+
+.arrow {
+  width: 16rpx;
+  height: 16rpx;
+  border-right: 4rpx solid #999;
+  border-bottom: 4rpx solid #999;
+  transform: rotate(45deg);
+  transition: transform 0.3s;
+}
+
+.arrow.expanded {
+  transform: rotate(-135deg);
+}
+
+.reasoning-content {
+  padding: 16rpx 16rpx 16rpx 32rpx;
+  background-color: #f5f5f7;
+  border-radius: 0 0 8rpx 8rpx;
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+  position: relative;
+}
+
+.reasoning-content::before {
+  content: '';
+  position: absolute;
+  left: 16rpx;
+  top: 0;
+  bottom: 0;
+  width: 4rpx;
+  background-color: #1890ff;
+  opacity: 0.5;
+}
+
+/* 思考中状态 */
+.thinking-bubble {
+  padding: 16rpx 24rpx;
+  border-radius: 12rpx;
+  background-color: #ffffff;
+  color: #666;
+  font-size: 28rpx;
+  line-height: 1.6;
+  word-break: break-all;
+  min-width: 120rpx;
+  display: inline-block;
+  opacity: 0.8;
+}
+
+.thinking-text {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.thinking-dots {
+  display: inline-flex;
+  margin-left: 4rpx;
+  align-items: center;
+  height: 28rpx;
+}
+
+.thinking-dots .dot {
+  animation: dotAnimation 1.4s infinite;
+  opacity: 0;
+  margin: 0 2rpx;
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+.thinking-dots .dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.thinking-dots .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.thinking-dots .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-4rpx);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+} 

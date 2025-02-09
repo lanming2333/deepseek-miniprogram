@@ -1,0 +1,199 @@
+<view class="chat-page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top:{{statusBarHeight}}px">
+    <view class="nav-actions">
+      <view class="nav-btn" bindtap="toggleSidebar">
+        <image src="{{showSidebar ? '/assets/images/back-button.svg' : '/assets/images/history.svg'}}" mode="aspectFit" class="{{showSidebar ? 'back' : ''}}" />
+      </view>
+      <view class="nav-btn" bindtap="startNewChat">
+        <image src="/assets/images/new-chat.svg" mode="aspectFit" />
+      </view>
+    </view>
+    <view class="nav-title">深索AI助手</view>
+    <view class="nav-right"></view>
+  </view>
+
+  <!-- 聊天内容区域 -->
+  <view class="chat-container" style="margin-top:{{navHeight}}px">
+    <!-- 聊天消息列表 -->
+    <scroll-view 
+      class="message-list"
+      scroll-y 
+      scroll-with-animation
+      scroll-top="{{scrollTop}}"
+      bindscrolltoupper="onScrollToUpper"
+      enhanced="{{true}}"
+      bounces="{{true}}"
+      show-scrollbar="{{false}}">
+      
+      <!-- 下拉刷新提示 -->
+      <view wx:if="{{isRefreshing}}" class="refresh-tip">
+        <view class="loading"></view>
+        <text>加载历史消息...</text>
+      </view>
+      
+      <!-- 消息列表 -->
+      <block wx:for="{{messages}}" wx:key="id">
+        <!-- 时间显示 -->
+        <view wx:if="{{index === 0 || shouldShowTime(item, messages[index-1])}}" class="time-divider">
+          {{formatTime(item.timestamp)}}
+        </view>
+        
+        <!-- 使用 chat-bubble 组件 -->
+        <chat-bubble 
+          message="{{item}}"
+          show-time="{{false}}"
+          bind:copy="onCopyMessage"
+          bind:toggle-reasoning="onToggleReasoning"
+        />
+      </block>
+      
+      <!-- 底部留白，确保最后一条消息可以完全显示 -->
+      <view class="bottom-space" style="{{bottom-space-style}}"></view>
+    </scroll-view>
+
+    <!-- 输入区域 -->
+    <view 
+      class="input-area safe-area-bottom {{isIOS ? 'ios' : ''}}" 
+      style="{{input-area-style}}"
+    >
+      <!-- 输入框 -->
+      <view class="input-box">
+        <input 
+          class="input"
+          value="{{inputText}}"
+          bindinput="onInput"
+          bindconfirm="sendMessage"
+          bindfocus="onInputFocus"
+          bindblur="onInputBlur"
+          placeholder="输入消息..."
+          confirm-type="send"
+          adjust-position="{{false}}"
+          cursor-spacing="20"
+          hold-keyboard="{{true}}"
+          disabled="{{sending}}"
+          fixed="{{true}}"
+        />
+        
+        <!-- 发送按钮 -->
+        <view 
+          class="send-btn {{inputText.trim() ? 'active' : ''}}"
+          bindtap="sendMessage">
+          <view wx:if="{{sending}}" class="loading"></view>
+          <text wx:else>发送</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 遮罩层 -->
+  <view class="mask {{showSidebar ? 'show' : ''}}" bindtap="closeSidebar" catch:touchmove="preventTouchMove"></view>
+
+  <!-- 侧边栏 -->
+  <view class="sidebar {{showSidebar ? 'show' : ''}}" catch:touchmove="preventTouchMove">
+    <!-- 搜索框 -->
+    <view class="search-box">
+      <view class="search-input-wrap">
+        <image class="search-icon" src="/assets/images/search.svg" mode="aspectFit" />
+        <input 
+          class="search-input"
+          type="text"
+          placeholder="搜索聊天记录"
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+          confirm-type="search"
+          bindconfirm="onSearch"
+        />
+        <view 
+          class="clear-icon {{searchKeyword ? 'show' : ''}}" 
+          bindtap="clearSearch"
+        >×</view>
+      </view>
+    </view>
+
+    <!-- 历史记录列表 -->
+    <scroll-view 
+      class="history-list"
+      scroll-y
+      bindscrolltolower="onLoadMore"
+      enhanced="{{true}}"
+      show-scrollbar="{{false}}">
+      
+      <!-- 分类标题 -->
+      <block wx:if="{{!searchKeyword}}">
+        <view class="history-section" wx:if="{{thisWeekSessions.length > 0}}">
+          <view class="section-title">本周</view>
+          <view class="session-list">
+            <view class="session-item" 
+              wx:for="{{thisWeekSessions}}" 
+              wx:key="id"
+              bindtap="selectSession" 
+              data-session="{{item}}">
+              <view class="session-title">{{item.title || '新对话'}}</view>
+              <view class="session-time">{{formatTime(item.timestamp)}}</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="history-section" wx:if="{{thisMonthSessions.length > 0}}">
+          <view class="section-title">本月</view>
+          <view class="session-list">
+            <view class="session-item" 
+              wx:for="{{thisMonthSessions}}" 
+              wx:key="id"
+              bindtap="selectSession" 
+              data-session="{{item}}">
+              <view class="session-title">{{item.title || '新对话'}}</view>
+              <view class="session-time">{{formatTime(item.timestamp)}}</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="history-section" wx:if="{{earlierSessions.length > 0}}">
+          <view class="section-title">更早</view>
+          <view class="session-list">
+            <view class="session-item" 
+              wx:for="{{earlierSessions}}" 
+              wx:key="id"
+              bindtap="selectSession" 
+              data-session="{{item}}">
+              <view class="session-title">{{item.title || '新对话'}}</view>
+              <view class="session-time">{{formatTime(item.timestamp)}}</view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 搜索结果 -->
+      <block wx:else>
+        <view class="session-list">
+          <view class="session-item" 
+            wx:for="{{searchResults}}" 
+            wx:key="id"
+            bindtap="selectSession" 
+            data-session="{{item}}">
+            <view class="session-title">{{item.title || '新对话'}}</view>
+            <view class="session-time">{{formatTime(item.timestamp)}}</view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 加载更多 -->
+      <view wx:if="{{isLoading}}" class="loading-more">
+        <view class="loading"></view>
+        <text>加载中...</text>
+      </view>
+      
+      <!-- 没有更多数据 -->
+      <view wx:if="{{!hasMore && sessionList.length > 0}}" class="no-more">
+        没有更多记录了
+      </view>
+      
+      <!-- 暂无数据 -->
+      <view wx:if="{{!isLoading && sessionList.length === 0}}" class="empty">
+        <image src="/assets/images/empty.png" mode="aspectFit" />
+        <text>暂无聊天记录</text>
+      </view>
+    </scroll-view>
+  </view>
+</view> 

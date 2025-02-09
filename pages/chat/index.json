@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "AI 助手",
+  "navigationBarTextStyle": "black",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationStyle": "custom",
+  "enableShareAppMessage": true,
+  "enableShareTimeline": true,
+  "usingComponents": {
+    "chat-bubble": "/components/chat-bubble/index"
+  }
+} 
