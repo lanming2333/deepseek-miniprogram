@@ -6,7 +6,16 @@
 const loadEnvFromStorage = () => {
   try {
     const envStr = wx.getStorageSync('env_variables')
-    return envStr ? JSON.parse(envStr) : null
+    console.log('从存储加载的环境变量:', envStr ? '有数据' : '无数据')
+    const env = envStr ? JSON.parse(envStr) : null
+    if (env) {
+      console.log('已加载的API密钥:', {
+        ark: env.ARK_API_KEY ? '已配置' : '未配置',
+        siliconflow: env.SILICONFLOW_API_KEY ? '已配置' : '未配置',
+        deepseek: env.DEEPSEEK_API_KEY ? '已配置' : '未配置'
+      })
+    }
+    return env
   } catch (error) {
     console.error('加载环境变量失败:', error)
     return null
@@ -46,40 +55,35 @@ export const setEnvBatch = (envVariables) => {
 
 // 检查是否已配置环境变量
 export const checkEnvConfig = () => {
-  const requiredKeys = [
-    'SILICONFLOW_API_KEY',
-    'DEEPSEEK_API_KEY',
-    'ARK_API_KEY'
-  ]
-  
   const env = loadEnvFromStorage()
   if (!env) return false
   
-  return requiredKeys.every(key => env[key])
+  // 只要有一个有效的API密钥即可
+  return env.ARK_API_KEY || env.SILICONFLOW_API_KEY || env.DEEPSEEK_API_KEY
 }
 
 // 从.env文件加载环境变量（仅开发环境使用）
 export const loadEnvFromFile = () => {
-  if (!wx.getFileSystemManager) return false
-  
   try {
-    const fs = wx.getFileSystemManager()
-    const envContent = fs.readFileSync('.env', 'utf8')
-    const env = {}
+    // 从.env文件读取的环境变量
+    const envVariables = {
+      SILICONFLOW_API_KEY: 'your_siliconflow_api_key',
+      DEEPSEEK_API_KEY: 'your_deepseek_api_key',
+      ARK_API_KEY: 'dbff1d9b-bcf5-4089-8bde-52a4ce875589',
+      SILICONFLOW_API_URL: 'https://api.siliconflow.cn/v1/chat/completions',
+      DEEPSEEK_API_URL: 'https://api.deepseek.com/v1/chat/completions',
+      ARK_API_URL: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
+      SILICONFLOW_MODEL: 'deepseek-ai/DeepSeek-R1',
+      DEEPSEEK_MODEL: 'deepseek-chat',
+      ARK_MODEL: 'ep-20250208164736-4s8c4'
+    }
     
-    envContent.split('\n').forEach(line => {
-      line = line.trim()
-      if (line && !line.startsWith('#')) {
-        const [key, value] = line.split('=')
-        if (key && value) {
-          env[key.trim()] = value.trim()
-        }
-      }
-    })
-    
-    return saveEnvToStorage(env)
+    // 保存到本地存储
+    wx.setStorageSync('env_variables', JSON.stringify(envVariables))
+    console.log('环境变量已保存到存储')
+    return true
   } catch (error) {
-    console.error('读取.env文件失败:', error)
+    console.error('保存环境变量失败:', error)
     return false
   }
 } 

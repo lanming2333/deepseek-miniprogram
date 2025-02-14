@@ -131,8 +131,7 @@
   position: relative;
 }
 
-.reasoning-content::before {
-  content: '';
+.reasoning-line {
   position: absolute;
   left: 16rpx;
   top: 0;

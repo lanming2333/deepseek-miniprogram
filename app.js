@@ -5,14 +5,13 @@ import { loadEnvFromFile, checkEnvConfig } from './utils/env'
 
 App({
   onLaunch() {
-    // 尝试加载环境变量
-    if (!checkEnvConfig()) {
-      console.log('尝试从.env文件加载环境变量')
-      if (loadEnvFromFile()) {
-        console.log('成功加载环境变量')
-      } else {
-        console.warn('未找到环境变量配置，请确保已配置API密钥')
-      }
+    // 加载环境变量
+    console.log('开始加载环境变量')
+    const envLoaded = loadEnvFromFile()
+    if (envLoaded) {
+      console.log('成功加载环境变量')
+    } else {
+      console.warn('加载环境变量失败，请确保已配置至少一个有效的API密钥')
     }
     
     // 初始化全局数据

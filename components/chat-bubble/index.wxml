@@ -34,6 +34,7 @@
           <view class="arrow {{isReasoningExpanded ? 'expanded' : ''}}"></view>
         </view>
         <view wx:if="{{isReasoningExpanded}}" class="reasoning-content text-wrap">
+          <view class="reasoning-line"></view>
           {{message.reasoning_content}}
         </view>
       </view>
